@@ -1,0 +1,35 @@
+---
+- name: Download and Extract WorPress
+  unarchive:
+        src: https://wordpress.org/latest.tar.gz
+        dest: /var/www/
+        remote_src: yes
+
+- name: Copy sample config file
+  command: mv /var/www/wordpress/wp-config-sample.php /var/www/wordpress/wp-config.php
+
+- name: Update Wordpress config file
+  lineinfile:
+        path: /var/www/wordpress/wp-config.php
+        regexp: "{{item.regexp}}"
+        line: "{{item.line}}"
+  with_items:
+        - {'regexp': "define\\( 'DB_NAME', '(.)+' \\);", 'line': "define( 'DB_NAME', 'wp' );"}
+        - {'regexp': "define\\( 'DB_USER', '(.)+' \\);", 'line': "define( 'DB_USER', 'wp' );"}
+        - {'regexp': "define\\( 'DB_PASSWORD', '(.)+' \\);", 'line': "define( 'DB_PASSWORD', 'wp_12345' );"}
+        - {'regexp': "define\\( 'DB_HOST', '(.)+' \\);", 'line': "define( 'DB_HOST', 'mysql' );"}
+        - {'regexp': "define\\( 'DB_CHARSET', '(.)+' \\);", 'line': "define( 'DB_CHARSET', 'utf8mb4' );"}
+        - {'regexp': "define\\( 'DB_COLLATE', '(.)+' \\);", 'line': "define( 'DB_COLLATE', 'utf8mb4_general_ci' );"}
+
+- name: Create and owner ship www-data dir
+  file:
+        path: /var/www/wordpress/
+        state: directory
+        recurse: yes
+        owner: www-data
+
+- name: Set the correct permissions on Wordpress directories
+  command: find /var/www/wordpress/ -type d -exec chmod 750 {} \;
+
+- name: Set the correct permissions for Wordpress files
+  command: find /var/www/wordpress/ -type f -exec chmod 640 {} \;

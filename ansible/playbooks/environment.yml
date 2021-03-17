@@ -1,0 +1,57 @@
+- name: Install common software
+  hosts: all
+  tags: common
+  become: true
+  roles:
+    - role: common
+
+- name: Configure pur proxy-server
+  hosts: proxy
+  tags: proxy
+  become: true
+  roles:
+    - role: nginx_proxy
+
+- name: Install and configure backends nginx
+  hosts: web
+  tags: webservers
+  become: true
+  ignore_errors: true
+  roles:
+    - role: nginx_web
+
+- name: Install and config KA master
+  hosts: web0
+  tags: KAmaster
+  become: true
+  roles:
+    - role: keepalived
+      vars:
+         virtual_router_id: 51
+         name_instance: nginx
+         state_VR: MASTER
+         priority: 177
+         ip_0: 10.1.0.10
+         ip_1: 10.1.0.11
+
+- name: Install and config KA backup
+  hosts: web1
+  tags: KAbackup
+  become: true
+  roles:
+    - role: keepalived
+      vars:
+         virtual_router_id: 51
+         name_instance: nginx
+         priority: 101
+         state_VR: BACKUP
+         ip_0: 10.1.0.11
+         ip_1: 10.1.0.10
+
+- name: Install and config mysql
+  hosts: sql
+  tags: sql
+  become: true
+  ignore_errors: true
+  roles:
+    - role: mysql

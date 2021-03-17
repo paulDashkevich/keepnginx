@@ -1,0 +1,5 @@
+---
+# file: group_vars/all
+virtual_ip: 10.1.0.81
+ansible_connection: ssh
+ansible_ssh_user: adminroot
