@@ -50,3 +50,13 @@
     enabled: yes
   notify:
     - start nginx
+
+- name: Ensure session directory permission.
+  file:
+      path: /var/lib/nginx
+      owner: "{{ php_fpm_pool_user }}"
+      group: "{{ php_fpm_pool_user }}"
+      state: directory
+      recurse: true
+  tags:
+    - php-fpm-config
