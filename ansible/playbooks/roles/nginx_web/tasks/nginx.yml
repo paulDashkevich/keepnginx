@@ -19,7 +19,7 @@
 
 - name: Create a cache-dir
   file:
-    path: /var/run/fastcgi-cache
+    path: "{{ fcgi_path }}"
     state: directory
     owner: www-data
     group: www-data

@@ -1,3 +1,4 @@
 ---
 http_port: 80
 https_port: 443
+fcgi_path: /tmp/nginx_cache
